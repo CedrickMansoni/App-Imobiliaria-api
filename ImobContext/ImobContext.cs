@@ -6,14 +6,18 @@ using App_Imobiliaria_api.Models.mensagem;
 using App_Imobiliaria_api.Models.usuario;
 using Microsoft.EntityFrameworkCore;
 
-namespace App_Imobiliaria_api.AppContext;
+namespace App_Imobiliaria_api.ImobContext;
 
-public class AppContext : DbContext
+public class ImobContext : DbContext
 {
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    public ImobContext(DbContextOptions<ImobContext> options) : base(options)
+    {
+        
+    }
+    /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseNpgsql("Host = localhost; Port = 5432, User Id = PostgresDb; Database = db_imob; Password = dellgsa");
-    }
+    }*/
     /* USUARIO ========================================================================*/
     public DbSet<Funcionario> TabelaFuncionarios { get; set; }
     public DbSet<ClienteProprietario> TabelaClientesProprietarios {get; set; }
