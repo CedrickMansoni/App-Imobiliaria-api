@@ -13,7 +13,7 @@ public class ImobContext : DbContext
     public ImobContext(DbContextOptions<ImobContext> options) : base(options)
     {
         
-    }
+    } 
     /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseNpgsql("Host = localhost; Port = 5432, User Id = PostgresDb; Database = db_imob; Password = dellgsa");
