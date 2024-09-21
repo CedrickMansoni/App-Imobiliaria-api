@@ -47,6 +47,7 @@ public class ImobContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Funcionario>().Property(f => f.Estado).HasConversion<string>();
+        modelBuilder.Entity<Funcionario>().Property(f => f.Nivel).HasConversion<string>();
         modelBuilder.Entity<ClienteProprietario>().Property(c => c.Estado).HasConversion<string>();
         modelBuilder.Entity<ClienteSolicitante>().Property(c => c.Estado).HasConversion<string>();
         /* =======================================================================================*/
