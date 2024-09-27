@@ -9,6 +9,6 @@ public class ClienteProprietario : Usuario
 {
 
     [Column("estado")]
-    public EstadoClienteProprietario Estado { get; set; }
+    public string Estado { get; set; } = string.Empty;
 }
 

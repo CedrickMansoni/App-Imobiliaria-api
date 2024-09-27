@@ -1,6 +1,7 @@
 using System;
 using App_Imobiliaria_api.ImobContext;
 using App_Imobiliaria_api.Models;
+using App_Imobiliaria_api.Models.DropBox;
 using App_Imobiliaria_api.Models.imovel;
 using App_Imobiliaria_api.Models.localizacao;
 using App_Imobiliaria_api.Models.mensagem;
@@ -163,5 +164,28 @@ public class GerenteService : IGerente
         }
         
         return modeleResponse;
+    }
+
+    public async Task<string> RenovarToken(Token token)
+    {
+        var DbToken = await context.TabelaToken.FindAsync(1);
+        if (DbToken is null)
+        {
+            await context.TabelaToken.AddAsync(token);            
+        }else
+        {
+            DbToken.TokenAccess = token.TokenAccess;
+            context.TabelaToken.Update(DbToken);
+        }
+        if (await context.SaveChangesAsync() == 1)
+        {
+            return "Token configurado com sucesso";
+        }
+        return "Erro:\nNão foi possível configurar o token, por favor tente novamente";
+    }
+
+    public async Task<Token?> PegarToken()
+    {
+        return await context.TabelaToken.FindAsync(1);
     }
 }

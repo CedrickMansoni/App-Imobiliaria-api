@@ -1,4 +1,5 @@
 using System;
+using App_Imobiliaria_api.Models.DropBox;
 using App_Imobiliaria_api.Models.imovel;
 using App_Imobiliaria_api.Models.lead;
 using App_Imobiliaria_api.Models.localizacao;
@@ -42,6 +43,8 @@ public class ImobContext : DbContext
     public DbSet<NotificarProprietario> TabelaNotificarProprietario { get; set; }
     public DbSet<NotificarCliente> TabelaNotificarCliente { get; set; }
     public DbSet<Chat> TabelaChat { get; set; }
+    /* TOKEN DROPBOX ==========================================================*/
+    public DbSet<Token> TabelaToken {get; set;}
     /* ========================================================================*/
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

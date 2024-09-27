@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Repository/Interfaces/imovelInterface/" />
     <Folder Include="Repository/Interfaces/leadInterface/" />
     <Folder Include="Repository/Interfaces/localizacaoInterface/" />
     <Folder Include="Repository/Interfaces/mensagemInterface/" />

@@ -1,5 +1,6 @@
 using System;
 using App_Imobiliaria_api.Enumerables;
+using App_Imobiliaria_api.Models.DropBox;
 using App_Imobiliaria_api.Models.localizacao;
 using App_Imobiliaria_api.Models.usuario;
 using App_Imobiliaria_api.Repository.Interfaces.usuarioInterface;
@@ -96,6 +97,29 @@ public class GerenteController : ControllerBase
     public async Task<IActionResult> ListarFuncionarios()
     {
         var response = await gerente.ListarFuncionarios();
+        if (response is null)
+        {
+            return BadRequest(response);
+        }
+        return Ok(response);
+    }
+
+    [HttpPost]
+    [Route("/cadastrar/token")]
+    public async Task<IActionResult> CadastrarToken([FromBody] Token token)
+    {
+        var response = await gerente.RenovarToken(token);
+        if (response is null)
+        {
+            return BadRequest(response);
+        }
+        return Ok(response);
+    }
+    [HttpGet]
+    [Route("/pegar/token")]
+    public async Task<IActionResult> PegarToken()
+    {
+        var response = await gerente.PegarToken();
         if (response is null)
         {
             return BadRequest(response);

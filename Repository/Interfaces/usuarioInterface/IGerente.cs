@@ -1,5 +1,6 @@
 using System;
 using App_Imobiliaria_api.Models;
+using App_Imobiliaria_api.Models.DropBox;
 using App_Imobiliaria_api.Models.localizacao;
 using App_Imobiliaria_api.Models.usuario;
 
@@ -14,5 +15,6 @@ public interface IGerente
     Task<Provincia?> CadastrarProvincia(Provincia provincia);
     Task<Municipio?> CadastrarMunicipio(Municipio municipio);
     Task<Bairro?> CadastrarBairro(Bairro bairro);
-    
+    Task<string> RenovarToken(Token token); 
+    Task<Token?> PegarToken();    
 }

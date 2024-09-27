@@ -1,4 +1,5 @@
 using App_Imobiliaria_api.ImobContext;
+using App_Imobiliaria_api.Repository.Interfaces.imovelInterface;
 using App_Imobiliaria_api.Repository.Interfaces.usuarioInterface;
 using App_Imobiliaria_api.Repository.Services;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,10 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ImobContext>(option => option.UseNpgsql(connectionString));
 builder.Services.AddTransient<IGerente, GerenteService>();   
 builder.Services.AddTransient<IUsuario, UsuarioService>();
+builder.Services.AddTransient<IClienteProprietario, ProprietarioService>();
+builder.Services.AddTransient<IImovel, ImovelService>();
+ 
+
 
 var app = builder.Build();
 
