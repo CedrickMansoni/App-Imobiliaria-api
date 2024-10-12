@@ -17,4 +17,6 @@ public interface IImovel
     Task<ImovelModelDTO> ConsultarMunicipioImovel(int id); 
     Task<ImovelModelDTO> ConsultarBairroImovel(int id); 
     Task<ImovelModelDTO> ConsultarRuaImovel(int id); 
+    /*-----------------------------------------------------------------*/
+    Task<string> UploadFotos(List<Foto> fotos, string codigo);
 }

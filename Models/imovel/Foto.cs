@@ -12,6 +12,6 @@ public class Foto
     [Column("imagem")]
     public string Imagem { get; set; } = string.Empty;
 
-    [Column("id_imovel")]
-    public int IdImovel { get; set; }
+    [Column("codigo_imovel")]
+    public string IdImovel { get; set; } = string.Empty;
 }

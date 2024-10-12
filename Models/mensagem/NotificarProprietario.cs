@@ -16,8 +16,8 @@ public class NotificarProprietario
     [Column("id_cliente_proprietario")]
     public int IdClienteProprietario { get; set; }
 
-    [Column("id_imovel")]
-    public int IdImovel { get; set; }
+    [Column("codigo_imovel")]
+    public string IdImovel { get; set; } = string.Empty;
 
     [Column("descricao")]
     public string Descricao { get; set; } = string.Empty;

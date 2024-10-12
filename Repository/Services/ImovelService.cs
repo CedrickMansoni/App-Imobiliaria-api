@@ -1,6 +1,8 @@
 using System;
+using System.Transactions;
 using App_Imobiliaria_api.ImobContext;
 using App_Imobiliaria_api.Models.imovel;
+using App_Imobiliaria_api.Models.localizacao;
 using App_Imobiliaria_api.Repository.Interfaces.imovelInterface;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,14 +11,104 @@ namespace App_Imobiliaria_api.Repository.Services;
 public class ImovelService : IImovel
 {
     private readonly ImobContext.ImobContext context;
+    private static readonly Random random = new Random();
+
     public ImovelService(ImobContext.ImobContext context)
     {
         this.context = context;
     }
 
-    public Task<string> CadastrarImovel(ImovelModelDTO imovel)
+    public async Task<string> CadastrarImovel(ImovelModelDTO imovel)
     {
-        throw new NotImplementedException();
+        using (var transacao = context.Database.BeginTransaction())
+        {
+            
+
+            foreach (var item in imovel.Rua)
+            {
+                imovel.IdRua = item.Id;
+            }
+            foreach (var item in imovel.Bairro)
+            {
+                imovel.IdBairro = item.Id;
+            }
+            foreach (var item in imovel.Municipio)
+            {
+                imovel.IdMunicipio = item.Id;
+            }
+            foreach (var item in imovel.Provincia)
+            {
+                imovel.IdProvincia = item.Id;
+            }
+            foreach (var item in imovel.Pais)
+            {
+                imovel.IdPais = item.Id;
+            }
+
+            var localizacao = new Localizacao()
+            {
+                IdRua = imovel.IdRua,
+                IdBairro = imovel.IdBairro,
+                IdMunicipio = imovel.IdMunicipio,
+                IdProvincia = imovel.IdProvincia,
+                IdPais = imovel.IdPais
+            };
+            await context.TabelaLocalizacao.AddAsync(localizacao);
+            if (await context.SaveChangesAsync() == 1)
+            {
+                var l = await context.TabelaLocalizacao.OrderByDescending(l => l.Id).FirstOrDefaultAsync();
+                if(l is not null)
+                imovel.Imovel.IdLocalizacao = l.Id;
+            }
+
+            var caracteristica = new NaturezaImovel();
+            if(imovel.NaturezaImovel is not null)
+            foreach (var item in imovel.NaturezaImovel)
+            {
+                caracteristica.Caracteristica = item.Caracteristica;
+                caracteristica.Descricao = item.Descricao;
+                caracteristica.IdTipoImovel = item.IdTipoImovel;
+            }
+
+            await context.TabelaNaturezaImovel.AddAsync(caracteristica);
+            if (await context.SaveChangesAsync() == 1)
+            {
+                var natureza = await context.TabelaNaturezaImovel.OrderByDescending(c => c.Id).FirstOrDefaultAsync();
+                if(natureza is not null)
+                imovel.Imovel.IdNaturezaImovel = natureza.Id;
+            }
+
+            imovel.Imovel.Codigo += GerarNumeroAleatorio();
+
+            var imovelDb = new Imovel()
+            {
+                Codigo = imovel.Imovel.Codigo,
+                IdClienteProprietario = imovel.ClienteProprietario.Id,
+                Descricao = imovel.Imovel.Descricao,
+                DataSolicitacao = DateTime.SpecifyKind(DateTime.Now.Date, DateTimeKind.Utc),
+                Estado = "Pendente",
+                TipoPublicidade = imovel.Imovel.TipoPublicidade,
+                Preco = imovel.Imovel.Preco,
+                IdNaturezaImovel = imovel.Imovel.IdNaturezaImovel,
+                IdLocalizacao = imovel.Imovel.IdLocalizacao
+            };
+
+            await context.TabelaImovel.AddAsync(imovelDb);
+            if(await context.SaveChangesAsync() == 1)
+            {
+                await transacao.CommitAsync();
+                return $"{imovelDb.Codigo}";
+            }else
+            {
+                await transacao.RollbackAsync();
+                return "Erro: Não foi possível cadastrar o imóvel";
+            }
+        }
+    }
+
+    public static int GerarNumeroAleatorio()
+    {
+        return random.Next(1000, 9999);
     }
 
     public Task<NaturezaImovel> CadastrarNaturezaImove(NaturezaImovel natureza)
@@ -160,5 +252,33 @@ public class ImovelService : IImovel
     public async Task<List<TipoImovel>?> ListarTipoImoveis()
     {
         return await context.TabelaTipoImovel.Where(i => i.Estado == true).OrderBy(i => i.TipoImovelDesc).ToListAsync();
+    }
+
+    public async Task<string> UploadFotos(List<Foto> fotos, string id)
+    {
+        using(var transacao = await context.Database.BeginTransactionAsync())
+        {
+            try
+            {
+                foreach (var item in fotos)
+                {
+                    item.IdImovel = id;
+                    await context.TabelaFoto.AddAsync(item);
+                }
+                if (await context.SaveChangesAsync() > 0)
+                {
+                    await transacao.CommitAsync();
+                    return "Fotos enviadas com sucesso";
+                }else
+                {
+                    await transacao.RollbackAsync();
+                    return "Erro: lamentamos, infelizmente não conseguimos enviar as imagens para o servidor";
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return ex.ToString();
+            }
+        }
     }
 }

@@ -12,8 +12,8 @@ public class Publicacao
     [Column("id_corretor")]
     public int IdCorretor { get; set; }
 
-    [Column("id_imovel")]
-    public int IdImovel { get; set; }
+    [Column("codigo_imovel")]
+    public string IdImovel { get; set; } = string.Empty;
 
     [Column("data_publicacao")]
     public DateTime DataPublicacao { get; set; }

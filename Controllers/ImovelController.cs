@@ -92,5 +92,29 @@ namespace App_Imobiliaria_api.Controllers
         {
             return Ok(await imovel.ConsultarRuaImovel(id));
         }
+
+        [HttpPost]
+        [Route("/cadastrar/imovel")]
+        public async Task<IActionResult> CadastrarImovel([FromBody] ImovelModelDTO imovelRequest)
+        {
+            var response = await imovel.CadastrarImovel(imovelRequest);
+            if (response.Contains("Erro"))
+            {
+                return BadRequest(response);                  
+            }
+            return Ok(response);        
+        }
+
+        [HttpPost]
+        [Route("/upload/fotos/{codigo}")]
+        public async Task<IActionResult> UploadFotos([FromBody] List<Foto> fotos, string codigo)
+        {
+            var response = await imovel.UploadFotos(fotos, codigo);
+            if (response.Contains("Erro"))
+            {
+                return Ok(response);
+            }
+            return BadRequest(response);            
+        }
     }
 }

@@ -10,6 +10,9 @@ public class Imovel
     [Column("id")]
     public int Id { get; set; }
 
+    [Column("codigo")]
+    public string Codigo { get; set; } = string.Empty;
+
     [Column("id_cliente_proprietario")]
     public int IdClienteProprietario { get; set; }
 
@@ -20,14 +23,17 @@ public class Imovel
     public DateTime DataSolicitacao { get; set; }
 
     [Column("estado")]
-    public EstadoImovel Estado { get; set; }
+    public string Estado { get; set; } = string.Empty;
 
     [Column("tipo_publicidade")]
-    public TipoPublicidadeImovel TipoPublicidade { get; set; }
+    public int TipoPublicidade { get; set; } 
 
     [Column("preco")]
-    public decimal Preco { get; set; }
+    public decimal Preco { get; set; }    
 
     [Column("id_natureza_imovel")]
     public int IdNaturezaImovel { get; set; }
+
+     [Column("id_localizacao")]
+    public int IdLocalizacao { get; set; }
 }

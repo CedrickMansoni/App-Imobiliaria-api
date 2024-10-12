@@ -15,6 +15,9 @@ public interface IGerente
     Task<Provincia?> CadastrarProvincia(Provincia provincia);
     Task<Municipio?> CadastrarMunicipio(Municipio municipio);
     Task<Bairro?> CadastrarBairro(Bairro bairro);
+    Task<Rua?> CadastrarRua(Rua rua);
     Task<string> RenovarToken(Token token); 
-    Task<Token?> PegarToken();    
+    Task<Token?> PegarToken(); 
+    /* ------------------------------------------------------------ */  
+    Task<Funcionario> GetFuncionario(string telefone);
 }

@@ -14,6 +14,7 @@ public class Funcionario : Usuario
 
     [Column("nivel")]
     public string Nivel { get; set; } = string.Empty;
+    
     [Column("avatar")]
-    public string Avatar { get; set; } = string.Empty;
+    public string? Avatar { get; set; }
 }

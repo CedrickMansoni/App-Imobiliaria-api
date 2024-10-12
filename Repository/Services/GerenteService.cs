@@ -188,4 +188,23 @@ public class GerenteService : IGerente
     {
         return await context.TabelaToken.FindAsync(1);
     }
+
+    public async Task<Rua?> CadastrarRua(Rua rua)
+    {
+        var ruaDb = await context.TabelaRua.FirstOrDefaultAsync(r => r.NomeRua == rua.NomeRua && r.IdBairro == rua.IdBairro);
+        if (ruaDb is null)
+        {
+            await context.TabelaRua.AddAsync(rua);
+            if (await context.SaveChangesAsync() == 1)
+            {
+                return await context.TabelaRua.FirstOrDefaultAsync(r => r.NomeRua == rua.NomeRua && r.IdBairro == rua.IdBairro);
+            }
+        }
+        return rua;
+    }
+
+    public Task<Funcionario> GetFuncionario(string telefone)
+    {
+        throw new NotImplementedException();
+    }
 }

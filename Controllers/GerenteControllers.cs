@@ -68,6 +68,19 @@ public class GerenteController : ControllerBase
         return Ok(response);
     }
 
+    [HttpPost]
+    [Route("/cadastrar/rua")]
+    public async Task<IActionResult> CadastrarRua([FromBody] Rua rua)
+    {
+        var response = await gerente.CadastrarRua(rua);
+        if (response is null)
+        {
+            return BadRequest(response);
+        }
+        return Ok(response);
+    }
+
+
     [HttpGet]
     [Route("/listar/zonas")]
     public async Task<IActionResult> ListarZonas()

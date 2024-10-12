@@ -28,6 +28,9 @@ public class ProprietarioService : IClienteProprietario
         return $"Erro: Não foi possível criar conta para o cliente {proprietario.Nome}, por favor tente novamente.";
     }
 
+    public async Task<ClienteProprietario?> GetProprietario(string telefone) 
+    => await context.TabelaClientesProprietarios.FirstOrDefaultAsync(p => p.Telefone == telefone);
+
     public Task<string> SolicitarPublicacaoImovel(Imovel imovel)
     {
         throw new NotImplementedException();

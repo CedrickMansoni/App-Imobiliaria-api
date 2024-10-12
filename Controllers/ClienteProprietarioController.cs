@@ -31,4 +31,9 @@ public class ClienteProprietarioController : ControllerBase
         return BadRequest("Não foi possível criar a sua conta, por favor tente novamente.");
     }
 
+    [HttpGet]
+    [Route("/pegar/proprietario/{telefone}")]
+    public async Task<IActionResult> GetProprietario(string telefone) 
+    => Ok(await proprietario.GetProprietario(telefone));
+
 }

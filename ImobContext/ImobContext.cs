@@ -55,7 +55,6 @@ public class ImobContext : DbContext
         modelBuilder.Entity<ClienteSolicitante>().Property(c => c.Estado).HasConversion<string>();
         /* =======================================================================================*/
         modelBuilder.Entity<Imovel>().Property(c => c.Estado).HasConversion<string>();
-        modelBuilder.Entity<Imovel>().Property(c => c.TipoPublicidade).HasConversion<string>();
         /* =======================================================================================*/
         modelBuilder.Entity<Lead>().Property(l => l.Estado).HasConversion<string>();
     }
