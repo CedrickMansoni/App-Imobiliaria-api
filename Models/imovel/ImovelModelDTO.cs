@@ -33,3 +33,5 @@ public class ImovelModelDTO
     public int IdCorretor {get;set;}
     public Funcionario CorretorImovel {get; set;} = new();    
 }
+
+

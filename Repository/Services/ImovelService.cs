@@ -90,7 +90,8 @@ public class ImovelService : IImovel
                 TipoPublicidade = imovel.Imovel.TipoPublicidade,
                 Preco = imovel.Imovel.Preco,
                 IdNaturezaImovel = imovel.Imovel.IdNaturezaImovel,
-                IdLocalizacao = imovel.Imovel.IdLocalizacao
+                IdLocalizacao = imovel.Imovel.IdLocalizacao,
+                IdCorretor = imovel.IdCorretor
             };
 
             await context.TabelaImovel.AddAsync(imovelDb);
@@ -254,7 +255,7 @@ public class ImovelService : IImovel
         return await context.TabelaTipoImovel.Where(i => i.Estado == true).OrderBy(i => i.TipoImovelDesc).ToListAsync();
     }
 
-    public async Task<string> UploadFotos(List<Foto> fotos, string id)
+    public async Task<string> UploadFotos(List<Foto> fotos, string codigo)
     {
         using(var transacao = await context.Database.BeginTransactionAsync())
         {
@@ -262,7 +263,7 @@ public class ImovelService : IImovel
             {
                 foreach (var item in fotos)
                 {
-                    item.IdImovel = id;
+                    item.IdImovel = codigo;
                     await context.TabelaFoto.AddAsync(item);
                 }
                 if (await context.SaveChangesAsync() > 0)
@@ -280,5 +281,85 @@ public class ImovelService : IImovel
                 return ex.ToString();
             }
         }
+    }
+
+    public async Task<IEnumerable<ImovelModelResponse>> ListarImoveis(string estado)
+    {
+        var query = from imovel in context.TabelaImovel
+            join localizacao in context.TabelaLocalizacao on imovel.IdLocalizacao equals localizacao.Id
+            join rua in context.TabelaRua on localizacao.IdRua equals rua.Id
+            join bairro in context.TabelaBairro on localizacao.IdBairro equals bairro.Id
+            join municipio in context.TabelaMunicipio on localizacao.IdMunicipio equals municipio.Id
+            join provincia in context.TabelaProvincia on localizacao.IdProvincia equals provincia.Id
+            join pais in context.TabelaPais on localizacao.IdPais equals pais.Id
+            join tipoImovel in context.TabelaTipoImovel on imovel.IdNaturezaImovel equals tipoImovel.Id
+            join caracteristica in context.TabelaNaturezaImovel on imovel.IdNaturezaImovel equals caracteristica.Id
+            join proprietario in context.TabelaClientesProprietarios on imovel.IdClienteProprietario equals proprietario.Id
+            join corretor in context.TabelaFuncionarios on imovel.IdCorretor equals corretor.Id
+            join tipoPublicacao in context.TabelaTipoPublicacao on imovel.TipoPublicidade equals tipoPublicacao.Id
+            where imovel.Estado == estado
+            select new ImovelModelResponse
+            {
+                Imovel = imovel,
+                Pais = pais,
+                Provincia = provincia,
+                Municipio = municipio,
+                Bairro = bairro,
+                Rua = rua,
+                TipoImovel = tipoImovel,
+                NaturezaImovel = caracteristica,
+                ClienteProprietario = proprietario,
+                CorretorImovel = corretor,
+                Fotos = context.TabelaFoto.Where(f => f.IdImovel == imovel.Codigo).ToList(),
+                FotoPrincipal = context.TabelaFoto.Where(f => f.IdImovel == imovel.Codigo).Select(f => f.Imagem).FirstOrDefault(), // Pega a primeira imagem
+                TipoPublicacao = tipoPublicacao
+            };
+        return await query.ToListAsync();
+    }
+
+    public async Task<string> PublicarImovel(Publicacao publicacao)
+    {
+        string response = string.Empty;
+        var p = await context.TabelaPublicacao.FirstOrDefaultAsync(p =>p.IdImovel == publicacao.IdImovel);
+        if(p is not null && p.Estado == true)
+        {
+            context.TabelaPublicacao.Update(p);
+            response = "Este imóvel ainda está activo";
+        }
+        if(p is not null && p.Estado == false)
+        {
+            p.Estado = true;
+            p.DataPublicacao = DateTime.SpecifyKind(DateTime.Now.Date, DateTimeKind.Utc);
+            context.TabelaPublicacao.Update(p);
+            response = "Imóvel reactivado com sucesso";
+        }
+        if (p is null)
+        {
+            publicacao.DataPublicacao = DateTime.SpecifyKind(DateTime.Now.Date, DateTimeKind.Utc);
+            publicacao.Estado = true;
+            await context.TabelaPublicacao.AddAsync(publicacao);
+            response = "Imóvel publicado com sucesso";
+        }
+        if (await context.SaveChangesAsync() > 0)
+        {
+            return response;
+        }
+        return "Erro: Não foi possível publicar este imóvel, por favor verfique a sua conexão e tente novamente.";
+    }
+
+    public async Task<string> EliminarImovel(string codigo)
+    {
+        var response = "O imóvel que pretende eliminar não existe";
+
+        var p = await context.TabelaImovel.FirstOrDefaultAsync(p =>p.Codigo == codigo);
+        if(p is not null)
+        {
+            context.TabelaImovel.Remove(p);
+            if (await context.SaveChangesAsync() > 0)
+            {
+                response = "Imóvel eliminado com sucesso";
+            }    
+        }
+        return response;
     }
 }

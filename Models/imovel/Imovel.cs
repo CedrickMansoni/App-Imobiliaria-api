@@ -16,6 +16,9 @@ public class Imovel
     [Column("id_cliente_proprietario")]
     public int IdClienteProprietario { get; set; }
 
+    [Column("id_corretor")]
+    public int IdCorretor { get; set; }
+
     [Column("descricao")]
     public string Descricao { get; set; } = string.Empty;
 
@@ -34,6 +37,6 @@ public class Imovel
     [Column("id_natureza_imovel")]
     public int IdNaturezaImovel { get; set; }
 
-     [Column("id_localizacao")]
+    [Column("id_localizacao")]
     public int IdLocalizacao { get; set; }
 }

@@ -29,6 +29,7 @@ public class ImobContext : DbContext
     public DbSet<TipoImovel> TabelaTipoImovel { get; set; }
     public DbSet<Foto> TabelaFoto { get; set; }
     public DbSet<Publicacao> TabelaPublicacao { get; set; }
+    public DbSet<TipoPublicacao> TabelaTipoPublicacao { get; set; }
     /* LOCALIZAÇÃO ========================================================================*/
     public DbSet<Pais> TabelaPais { get; set; }
     public DbSet<Provincia> TabelaProvincia { get; set; }

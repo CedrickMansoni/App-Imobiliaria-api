@@ -1,4 +1,5 @@
 using System;
+using App_Imobiliaria_api.Enumerables;
 using App_Imobiliaria_api.Models.imovel;
 
 namespace App_Imobiliaria_api.Repository.Interfaces.imovelInterface;
@@ -19,4 +20,9 @@ public interface IImovel
     Task<ImovelModelDTO> ConsultarRuaImovel(int id); 
     /*-----------------------------------------------------------------*/
     Task<string> UploadFotos(List<Foto> fotos, string codigo);
+    /*-----------------------------------------------------------------*/
+    Task<IEnumerable<ImovelModelResponse>> ListarImoveis(string estado);
+    /*-----------------------------------------------------------------*/
+    Task<string> PublicarImovel(Publicacao publicacao);
+    Task<string> EliminarImovel(string codigo);
 }
