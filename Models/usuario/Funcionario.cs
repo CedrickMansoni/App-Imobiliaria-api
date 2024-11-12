@@ -18,3 +18,4 @@ public class Funcionario : Usuario
     [Column("avatar")]
     public string? Avatar { get; set; }
 }
+

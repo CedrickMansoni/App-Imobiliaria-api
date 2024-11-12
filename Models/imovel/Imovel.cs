@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using App_Imobiliaria_api.Enumerables;
 
@@ -7,10 +8,8 @@ namespace App_Imobiliaria_api.Models.imovel;
 [Table("tabela12_imovel")]
 public class Imovel
 {
-    [Column("id")]
-    public int Id { get; set; }
-
-    [Column("codigo")]
+    [Key]
+    [Column("codigo_imovel")]
     public string Codigo { get; set; } = string.Empty;
 
     [Column("id_cliente_proprietario")]

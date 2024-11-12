@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace App_Imobiliaria_api.Models.imovel;
@@ -6,15 +7,10 @@ namespace App_Imobiliaria_api.Models.imovel;
 [Table("tabela14_publicacao")]
 public class Publicacao
 {
-    [Column("id")]
-    public int Id { get; set; }
-
-    [Column("id_corretor")]
-    public int IdCorretor { get; set; }
-
-    [Column("codigo_imovel")]
-    public string IdImovel { get; set; } = string.Empty;
-
+    [Key]
+    [Column("codigo_publicacao")]
+    public string Codigo_Publicacao { get; set; } = string.Empty;
+    
     [Column("data_publicacao")]
     public DateTime DataPublicacao { get; set; }
 

@@ -18,9 +18,32 @@ public class UsuarioService : IUsuario
     }
 
 
-    public Task<Usuario> EditarPerfil(Usuario usuario)
+    public async Task<bool> EditarPerfil(PerfilUsuario<Funcionario> usuario)
     {
-        throw new NotImplementedException();
+        var perfilDB = await context.TabelaFuncionarios.FirstOrDefaultAsync(f => f.Id == usuario.Entidade!.Id);
+        if (perfilDB is not null)
+        {
+            usuario.Entidade!.Senha = perfilDB.Senha;
+            perfilDB = usuario.Entidade;
+            context.TabelaFuncionarios.Update(perfilDB!);
+            if (await context.SaveChangesAsync() > 0)
+            {
+                return true;
+            }            
+        }
+        return false;
+    }
+
+    public async Task<bool> EditarSenhafuncionario(Funcionario funcionario)
+    {
+        var f = await context.TabelaFuncionarios.FirstOrDefaultAsync(f => f.Id == funcionario.Id);
+        if (f is not null)
+        {
+            f.Senha = funcionario.Senha;
+            context.Entry(f).Property(x => x.Senha).IsModified = true;
+            return await context.SaveChangesAsync() > 0 ? true: false;        
+        }
+        return false;
     }
 
     public async Task<ModelResponse<Usuario>?> FazerLogin(ModelResponse<Usuario> usuario)
@@ -44,8 +67,33 @@ public class UsuarioService : IUsuario
         return modelResponse;
     }
 
-    public Task<Usuario> VerPerfil(int id)
+    public async Task<ModelResponse<Funcionario>> VerPerfil(int id)
     {
-        throw new NotImplementedException();
+        var modeleResponse = new ModelResponse<Funcionario>();
+        
+        var lista = await context.TabelaFuncionarios.Where(f => f.Id == id).ToListAsync();
+        
+        var model = new ModelResponse<Funcionario>();
+
+        foreach (var item in lista)
+        {
+            
+            item.Senha = string.Empty;
+            model.Dados = item;
+            if (!string.IsNullOrEmpty(item.Avatar))
+            {
+                model.Avatar = item.Avatar;
+            }            
+            var provincia = await context.TabelaProvincia.FindAsync(item.IdProvincia);
+            model.UserType = item.Nivel;
+            model.Estado = item.Estado;
+            if(provincia is not null)
+            {
+                model.Mensagem = provincia.NomeProvincia; 
+            }                       
+        }
+        modeleResponse = model;
+        
+        return modeleResponse;
     }
 }

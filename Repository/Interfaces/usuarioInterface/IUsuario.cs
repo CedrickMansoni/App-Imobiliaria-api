@@ -8,6 +8,7 @@ namespace App_Imobiliaria_api.Repository.Interfaces.usuarioInterface;
 public interface IUsuario
 {    
     Task<ModelResponse<Usuario>?> FazerLogin(ModelResponse<Usuario> usuario);
-    Task<Usuario> VerPerfil(int id);
-    Task<Usuario> EditarPerfil(Usuario usuario);
+    Task<ModelResponse<Funcionario>> VerPerfil(int id);
+    Task<bool> EditarPerfil(PerfilUsuario<Funcionario> usuario);
+    Task<bool> EditarSenhafuncionario(Funcionario funcionario);
 }

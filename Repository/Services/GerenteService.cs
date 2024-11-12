@@ -142,6 +142,32 @@ public class GerenteService : IGerente
         return "Erro: Não foi possível cadastrar o funcionário. Por favor tente novamente";
     }
 
+    public async Task<int> EditarCorretor(Funcionario funcionario)
+    {
+        var f = await context.TabelaFuncionarios.FirstOrDefaultAsync(f => f.Id == funcionario.Id);
+        if (f is not null)
+        {
+            f.Nome = funcionario.Nome;
+            f.Telefone = funcionario.Telefone;
+            f.Email = funcionario.Email;
+            f.Estado = funcionario.Estado;
+            f.IdProvincia = funcionario.IdProvincia;
+            f.Nivel = funcionario.Nivel;
+
+            // Marca apenas os campos desejados como modificados
+            context.Entry(f).Property(x => x.Nome).IsModified = true;
+            context.Entry(f).Property(x => x.Telefone).IsModified = true;
+            context.Entry(f).Property(x => x.Email).IsModified = true;
+            context.Entry(f).Property(x => x.Estado).IsModified = true;
+            context.Entry(f).Property(x => x.IdProvincia).IsModified = true;
+            context.Entry(f).Property(x => x.Nivel).IsModified = true;
+
+            return await context.SaveChangesAsync();
+        }        
+        return 0;    
+    }
+
+
     public async Task<List<ModelResponse<Funcionario>>> ListarFuncionarios()
     {
         var modeleResponse = new List<ModelResponse<Funcionario>>();
@@ -153,6 +179,38 @@ public class GerenteService : IGerente
             var model = new ModelResponse<Funcionario>();
             item.Senha = string.Empty;
             model.Dados = item;
+            if (!string.IsNullOrEmpty(item.Avatar))
+            {
+                model.Avatar = item.Avatar;
+            }            
+            var provincia = await context.TabelaProvincia.FindAsync(item.IdProvincia);
+            model.UserType = item.Nivel;
+            model.Estado = item.Estado;
+            if(provincia is not null)
+            {
+                model.Mensagem = provincia.NomeProvincia; 
+            }                       
+            modeleResponse.Add(model);                        
+        }
+        
+        return modeleResponse;
+    }
+
+    public async Task<List<ModelResponse<Funcionario>>> ListarFuncionariosCategoria(string categoria)
+    {
+        var modeleResponse = new List<ModelResponse<Funcionario>>();
+        
+        var lista = await context.TabelaFuncionarios.Where(f => f.Nivel == categoria).ToListAsync();
+
+        foreach (var item in lista)
+        {
+            var model = new ModelResponse<Funcionario>();
+            item.Senha = string.Empty;
+            model.Dados = item;
+            if (!string.IsNullOrEmpty(item.Avatar))
+            {
+                model.Avatar = item.Avatar;
+            }            
             var provincia = await context.TabelaProvincia.FindAsync(item.IdProvincia);
             model.UserType = item.Nivel;
             model.Estado = item.Estado;

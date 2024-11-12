@@ -9,6 +9,7 @@ namespace App_Imobiliaria_api.Repository.Interfaces.usuarioInterface;
 public interface IGerente 
 {
     Task<string> CadastrarCorretor(Funcionario funcionario);
+    Task<int> EditarCorretor(Funcionario funcionario);
     Task<List<ModelResponse<Funcionario>>> ListarFuncionarios();
     Task<Pais?> CadastrarPais(Pais pais);
     Task<List<PaisModelRequest>> ListarPaises();
@@ -20,4 +21,5 @@ public interface IGerente
     Task<Token?> PegarToken(); 
     /* ------------------------------------------------------------ */  
     Task<Funcionario> GetFuncionario(string telefone);
+    Task<List<ModelResponse<Funcionario>>> ListarFuncionariosCategoria(string categoria);
 }

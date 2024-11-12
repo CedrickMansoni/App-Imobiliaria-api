@@ -21,6 +21,9 @@ public class ImovelModelResponse
     /* DADOS DO PROPRIETÁRIO DO IMÓVEL ------------------------------------------------ */
     public ClienteProprietario ClienteProprietario {get; set;} = new();
 
-    /* DADOS DO CORRETOR RESPONSÁVEL---------------------------------------------------- */
+    /* DADOS DO CORRETOR RESPONSÁVEL--------------------------------------------------------------------- */
     public Funcionario CorretorImovel {get; set;} = new();
+
+    /*----------------------------------------------------------------------------------------------------*/
+    public string Mensagem {get; set;} = string.Empty;
 }

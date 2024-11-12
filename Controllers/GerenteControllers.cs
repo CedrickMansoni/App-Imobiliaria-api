@@ -105,6 +105,23 @@ public class GerenteController : ControllerBase
         return Ok(response);
     }
 
+    [HttpPut]
+    [Route("/editar/funcionario")]
+    public async Task<IActionResult> EditarFuncionario([FromBody] Funcionario funcionario)
+    {
+        
+        if (funcionario is null)
+        {
+            return BadRequest("Objecto vazio");
+        }
+        var response = await gerente.EditarCorretor(funcionario);
+        if (response == 0)
+        {
+            return BadRequest("Erro: Não foi possível editar o usuario");
+        }
+        return Ok("Usuário editado com sucesso");
+    }
+
     [HttpGet]
     [Route("/listar/funcionarios")]
     public async Task<IActionResult> ListarFuncionarios()
@@ -116,6 +133,10 @@ public class GerenteController : ControllerBase
         }
         return Ok(response);
     }
+
+    [HttpGet]
+    [Route("/listar/funcionarios/{categoria}")]
+    public async Task<IActionResult> ListarFuncionariosCategoria(string categoria)=>Ok(await gerente.ListarFuncionariosCategoria(categoria));    
 
     [HttpPost]
     [Route("/cadastrar/token")]

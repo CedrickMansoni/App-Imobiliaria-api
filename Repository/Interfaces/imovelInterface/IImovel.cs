@@ -21,7 +21,8 @@ public interface IImovel
     /*-----------------------------------------------------------------*/
     Task<string> UploadFotos(List<Foto> fotos, string codigo);
     /*-----------------------------------------------------------------*/
-    Task<IEnumerable<ImovelModelResponse>> ListarImoveis(string estado);
+    Task<List<ImovelModelResponse>> ListarImoveis(string estado);
+     Task<List<ImovelModelResponse>?> PesquisarImovel(string codigo);
     /*-----------------------------------------------------------------*/
     Task<string> PublicarImovel(Publicacao publicacao);
     Task<string> EliminarImovel(string codigo);

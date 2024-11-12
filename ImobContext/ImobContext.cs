@@ -44,6 +44,8 @@ public class ImobContext : DbContext
     public DbSet<NotificarProprietario> TabelaNotificarProprietario { get; set; }
     public DbSet<NotificarCliente> TabelaNotificarCliente { get; set; }
     public DbSet<Chat> TabelaChat { get; set; }
+    /* TABELA DOS FAVORITOS ==========================================================*/
+    public DbSet<Favorito> TabelaFavorito {get; set;}
     /* TOKEN DROPBOX ==========================================================*/
     public DbSet<Token> TabelaToken {get; set;}
     /* ========================================================================*/

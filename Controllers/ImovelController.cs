@@ -150,7 +150,7 @@ namespace App_Imobiliaria_api.Controllers
 
             foreach (var item in caminhosSalvos)
             {
-                fotos.Add(new Foto { Imagem = $"{servidor}images/{item}", IdImovel = codigo });
+                fotos.Add(new Foto { Imagem = $"{servidor}images/{codigo}/{item}", IdImovel = codigo });
             }
 
             var response = await imovel.UploadFotos(fotos, codigo);
@@ -182,7 +182,7 @@ namespace App_Imobiliaria_api.Controllers
             return BadRequest(response);            
         }
 
-        [HttpPut]
+        [HttpDelete]
         [Route("/eliminar/imovel/{codigo}")]
         public async Task<IActionResult> EditarTipoImovel(string codigo)
         {
@@ -212,5 +212,13 @@ namespace App_Imobiliaria_api.Controllers
             }
             return BadRequest(response);
         }
+    
+        [HttpGet]
+        [Route("/pesquisar/imovel/{codigo}")]
+        public async Task<IActionResult> PesquisarImovel(string codigo)
+        {
+            return Ok(await imovel.PesquisarImovel(codigo));
+        }
+    
     }
 }
