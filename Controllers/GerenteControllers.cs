@@ -133,6 +133,10 @@ public class GerenteController : ControllerBase
         }
         return Ok(response);
     }
+    
+    [HttpGet]
+    [Route("/home")]
+    public async Task<IActionResult> GetHomePage()=> Ok(await gerente.GetHomePage());
 
     [HttpGet]
     [Route("/listar/funcionarios/{categoria}")]

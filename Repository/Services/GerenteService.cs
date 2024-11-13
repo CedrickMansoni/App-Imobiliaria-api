@@ -2,6 +2,7 @@ using System;
 using App_Imobiliaria_api.ImobContext;
 using App_Imobiliaria_api.Models;
 using App_Imobiliaria_api.Models.DropBox;
+using App_Imobiliaria_api.Models.HomePage;
 using App_Imobiliaria_api.Models.imovel;
 using App_Imobiliaria_api.Models.localizacao;
 using App_Imobiliaria_api.Models.mensagem;
@@ -167,7 +168,6 @@ public class GerenteService : IGerente
         return 0;    
     }
 
-
     public async Task<List<ModelResponse<Funcionario>>> ListarFuncionarios()
     {
         var modeleResponse = new List<ModelResponse<Funcionario>>();
@@ -264,5 +264,52 @@ public class GerenteService : IGerente
     public Task<Funcionario> GetFuncionario(string telefone)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<HomePageModel> GetHomePage()
+    {
+        var homePage = new HomePageModel();
+        
+        var funcionarioTabela = await context.TabelaFuncionarios.ToListAsync();
+        homePage.FuncionarioTotal = funcionarioTabela.Count();
+        homePage.FuncionarioActivos = funcionarioTabela.Where(f => f.Estado == "Activo").Count();
+        homePage.FuncionarioInactivos = funcionarioTabela.Where(f => f.Estado == "Inactivo").Count();
+        homePage.FuncionarioGerentes = funcionarioTabela.Where(f => f.Nivel == "Gerente").Count();
+        homePage.FuncionarioCorretores = funcionarioTabela.Where(f => f.Nivel == "Corretor").Count();
+
+        /*---------------------------------------------------------------------------------------------*/
+
+        var clienteProprietarioTabela = await context.TabelaClientesProprietarios.ToListAsync();
+        homePage.ClienteProprietarios = clienteProprietarioTabela.Count();
+
+        /*---------------------------------------------------------------------------------------------*/
+
+        var clienteConsumidor = await context.TabelaClientesSolicitantes.ToListAsync();
+        homePage.ClienteConsumidores = clienteConsumidor.Count();
+
+        /*---------------------------------------------------------------------------------------------*/
+
+        var imoveisTabela = await context.TabelaImovel.ToListAsync();
+        homePage.ImoveisCadastrados = imoveisTabela.Count();
+        homePage.ImoveisPendentes = imoveisTabela.Where(i => i.Estado == "Pendente").Count();
+        homePage.ImoveisDisponiveis = imoveisTabela.Where(i => i.Estado == "Disponível").Count();
+        homePage.ImoveisPublicados = imoveisTabela.Where(i => i.Estado != "Pendente").Count();
+
+        /*---------------------------------------------------------------------------------------------*/
+
+        homePage.ImoveisParaVenda = imoveisTabela.Where(i => i.TipoPublicidade == 2).Count();
+        homePage.ImoveisParaArrendamento = imoveisTabela.Where(i => i.TipoPublicidade == 1).Count();
+
+        /*---------------------------------------------------------------------------------------------*/
+
+        homePage.ImoveisTotalVendidos = imoveisTabela.Where(i => i.Estado == "Indisponível" && i.TipoPublicidade == 2).Count();
+        homePage.ImoveisTotalArrendados = imoveisTabela.Where(i => i.Estado == "Indisponível" && i.TipoPublicidade == 1).Count();
+
+        /*---------------------------------------------------------------------------------------------*/
+
+        homePage.ValorVendas = imoveisTabela.Where(i => i.Estado == "Disponível" && i.TipoPublicidade == 2).Sum(i => i.Preco);
+        homePage.ValorArrendamento = imoveisTabela.Where(i => i.Estado == "Disponível" && i.TipoPublicidade == 1).Sum(i => i.Preco);
+
+        return homePage;
     }
 }

@@ -16,6 +16,6 @@ public class Usuario
 
     [Column("email")]
     public string Email { get; set; } = string.Empty;
-     [Column("senha")]
+    [Column("senha")]
     public string Senha { get; set; } = string.Empty;
 }

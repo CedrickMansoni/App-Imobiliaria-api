@@ -1,6 +1,7 @@
 using System;
 using App_Imobiliaria_api.Models;
 using App_Imobiliaria_api.Models.DropBox;
+using App_Imobiliaria_api.Models.HomePage;
 using App_Imobiliaria_api.Models.localizacao;
 using App_Imobiliaria_api.Models.usuario;
 
@@ -19,6 +20,8 @@ public interface IGerente
     Task<Rua?> CadastrarRua(Rua rua);
     Task<string> RenovarToken(Token token); 
     Task<Token?> PegarToken(); 
+    /* ------------------------------------------------------------ */  
+    Task<HomePageModel> GetHomePage();
     /* ------------------------------------------------------------ */  
     Task<Funcionario> GetFuncionario(string telefone);
     Task<List<ModelResponse<Funcionario>>> ListarFuncionariosCategoria(string categoria);
