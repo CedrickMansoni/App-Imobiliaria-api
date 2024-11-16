@@ -9,45 +9,38 @@ using Microsoft.EntityFrameworkCore;
 
 namespace App_Imobiliaria_api.ImobContext;
 
-public class ImobContext : DbContext
+public class ImobContext(DbContextOptions<ImobContext> options) : DbContext(options)
 {
-    public ImobContext(DbContextOptions<ImobContext> options) : base(options)
-    {
-        
-    } 
-    /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseNpgsql("Host = localhost; Port = 5432, User Id = PostgresDb; Database = db_imob; Password = dellgsa");
-    }*/
+    
     /* USUARIO ========================================================================*/
-    public DbSet<Funcionario> TabelaFuncionarios { get; set; }
-    public DbSet<ClienteProprietario> TabelaClientesProprietarios {get; set; }
-    public DbSet<ClienteSolicitante> TabelaClientesSolicitantes {get; set; }
+    public required DbSet<Funcionario> TabelaFuncionarios { get; set; } 
+    public required DbSet<ClienteProprietario> TabelaClientesProprietarios {get; set; }
+    public required DbSet<ClienteSolicitante> TabelaClientesSolicitantes {get; set; }
     /* IMOVEL ========================================================================*/
-    public DbSet<Imovel> TabelaImovel { get; set; }
-    public DbSet<NaturezaImovel> TabelaNaturezaImovel { get; set; }
-    public DbSet<TipoImovel> TabelaTipoImovel { get; set; }
-    public DbSet<Foto> TabelaFoto { get; set; }
-    public DbSet<Publicacao> TabelaPublicacao { get; set; }
-    public DbSet<TipoPublicacao> TabelaTipoPublicacao { get; set; }
+    public required DbSet<Imovel> TabelaImovel { get; set; }
+    public required DbSet<NaturezaImovel> TabelaNaturezaImovel { get; set; }
+    public required DbSet<TipoImovel> TabelaTipoImovel { get; set; }
+    public required DbSet<Foto> TabelaFoto { get; set; }
+    public required DbSet<Publicacao> TabelaPublicacao { get; set; }
+    public required DbSet<TipoPublicacao> TabelaTipoPublicacao { get; set; }
     /* LOCALIZAÇÃO ========================================================================*/
-    public DbSet<Pais> TabelaPais { get; set; }
-    public DbSet<Provincia> TabelaProvincia { get; set; }
-    public DbSet<Municipio> TabelaMunicipio { get; set; }
-    public DbSet<Bairro> TabelaBairro { get; set; }
-    public DbSet<Rua> TabelaRua { get; set; }
-    public DbSet<Localizacao> TabelaLocalizacao { get; set; }
+    public DbSet<Pais>? TabelaPais { get; set; }
+    public required DbSet<Provincia> TabelaProvincia { get; set; }
+    public required DbSet<Municipio> TabelaMunicipio { get; set; }
+    public required DbSet<Bairro> TabelaBairro { get; set; }
+    public required DbSet<Rua> TabelaRua { get; set; }
+    public required DbSet<Localizacao> TabelaLocalizacao { get; set; }
     /* LEAD ========================================================================*/
-    public DbSet<Lead> TabelaLead { get; set; }
+    public required DbSet<Lead> TabelaLead { get; set; }
     /* MENSAGEM ========================================================================*/
-    public DbSet<SolicitacaoCliente> TabelaSolicitacaoCliente { get; set; }
-    public DbSet<NotificarProprietario> TabelaNotificarProprietario { get; set; }
-    public DbSet<NotificarCliente> TabelaNotificarCliente { get; set; }
-    public DbSet<Chat> TabelaChat { get; set; }
+    public required DbSet<SolicitacaoCliente> TabelaSolicitacaoCliente { get; set; }
+    public required DbSet<NotificarProprietario> TabelaNotificarProprietario { get; set; }
+    public required DbSet<NotificarCliente> TabelaNotificarCliente { get; set; }
+    public required DbSet<Chat> TabelaChat { get; set; }
     /* TABELA DOS FAVORITOS ==========================================================*/
-    public DbSet<Favorito> TabelaFavorito {get; set;}
+    public required DbSet<Favorito> TabelaFavorito {get; set;}
     /* TOKEN DROPBOX ==========================================================*/
-    public DbSet<Token> TabelaToken {get; set;}
+    public required DbSet<Token> TabelaToken {get; set;}
     /* ========================================================================*/
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

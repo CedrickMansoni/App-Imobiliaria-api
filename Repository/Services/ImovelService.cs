@@ -176,7 +176,7 @@ public class ImovelService : IImovel
     public async Task<ImovelModelDTO> ConsultarPaisImovel()
     {
         var response = new ImovelModelDTO(); 
-        var listaPaises = await context.TabelaPais.ToListAsync();
+        var listaPaises = await context.TabelaPais!.ToListAsync();
         if (listaPaises is null)
         {
             return response;            
@@ -291,7 +291,7 @@ public class ImovelService : IImovel
         join bairro in context.TabelaBairro on localizacao.IdBairro equals bairro.Id
         join municipio in context.TabelaMunicipio on localizacao.IdMunicipio equals municipio.Id
         join provincia in context.TabelaProvincia on localizacao.IdProvincia equals provincia.Id
-        join pais in context.TabelaPais on localizacao.IdPais equals pais.Id        
+        join pais in context.TabelaPais! on localizacao.IdPais equals pais.Id        
         join caracteristica in context.TabelaNaturezaImovel on imovel.IdNaturezaImovel equals caracteristica.Id
         join tipoImovel in context.TabelaTipoImovel on caracteristica.IdTipoImovel equals tipoImovel.Id
         join proprietario in context.TabelaClientesProprietarios on imovel.IdClienteProprietario equals proprietario.Id
@@ -315,10 +315,15 @@ public class ImovelService : IImovel
             TipoPublicacao = tipoPublicacao
         };
 
-        // Usando ToListAsync para garantir que retorne uma lista
-        var resultado = await query.ToListAsync();
+        
 
-        // Verifique se o resultado está correto (você pode adicionar um ponto de depuração aqui)
+
+        var resultado = await query.ToListAsync();
+        foreach (var item in resultado)
+        {
+            item.ClienteProprietario.Senha = string.Empty;
+            item.CorretorImovel.Senha = string.Empty;
+        }
         return resultado;
     }
 
@@ -410,7 +415,7 @@ public class ImovelService : IImovel
         join bairro in context.TabelaBairro on localizacao.IdBairro equals bairro.Id
         join municipio in context.TabelaMunicipio on localizacao.IdMunicipio equals municipio.Id
         join provincia in context.TabelaProvincia on localizacao.IdProvincia equals provincia.Id
-        join pais in context.TabelaPais on localizacao.IdPais equals pais.Id        
+        join pais in context.TabelaPais! on localizacao.IdPais equals pais.Id        
         join caracteristica in context.TabelaNaturezaImovel on imovel.IdNaturezaImovel equals caracteristica.Id
         join tipoImovel in context.TabelaTipoImovel on caracteristica.IdTipoImovel equals tipoImovel.Id
         join proprietario in context.TabelaClientesProprietarios on imovel.IdClienteProprietario equals proprietario.Id

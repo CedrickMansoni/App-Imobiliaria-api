@@ -18,36 +18,30 @@ namespace App_Imobiliaria_api.Controllers
         private readonly string _storagePath = "/home/ckm/Imagens/StorageYula";
 
         [HttpPost]
-        [Route("/editar/perfil")]
-        public async Task<IActionResult> UploadFotos([FromForm] PerfilUsuario<Funcionario> perfil)
+        [Route("/upload/foto/perfil/{id}")]
+        public async Task<IActionResult> UploadFotos([FromForm] IFormFile perfil, int id)
         {
-            string fullPath = Path.Combine(_storagePath, perfil.Entidade!.Telefone); 
+            string fullPath = Path.Combine(_storagePath, "fotoperfil"); 
 
             if (!Directory.Exists(fullPath))
             {
                 Directory.CreateDirectory(fullPath);
             }
 
-            if (perfil.Entidade == null && perfil.FotoPerfil == null)
+            if (perfil == null)
             {
                 return BadRequest("Nenhuma imagem foi enviada.");
             }
-           
-            string caminhoArquivo = string.Empty;
-
-            if (string.IsNullOrEmpty(perfil.FotoPerfil!.FileName))
-            {
-                caminhoArquivo = Path.Combine(fullPath, perfil.FotoPerfil!.FileName);
-                var servidor = $"{UrlBase.UriBase.URI}";
-                perfil.Entidade!.Avatar = $"{servidor}images/{perfil.Entidade.Telefone}/{perfil.FotoPerfil.FileName}";
-            }
+        
+            string caminhoArquivo = Path.Combine(fullPath, perfil.FileName);
+            var servidor = $"{UrlBase.UriBase.URI}";
 
             using (var stream = new FileStream(caminhoArquivo, FileMode.Create))
             {
-                await perfil.FotoPerfil.CopyToAsync(stream);
+                await perfil.CopyToAsync(stream);
             }
             
-            var response = await usuario.EditarPerfil(perfil);
+            var response = await usuario.EditarPerfil($"{servidor}images/fotoperfil/{perfil.FileName}", id);
             
             if (response)
             {

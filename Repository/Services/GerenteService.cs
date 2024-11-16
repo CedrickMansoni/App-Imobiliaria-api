@@ -43,7 +43,7 @@ public class GerenteService : IGerente
 
     public async Task<Pais?> CadastrarPais(Pais pais)
     {
-        await context.TabelaPais.AddAsync(pais);
+        await context.TabelaPais!.AddAsync(pais);
         if (await context.SaveChangesAsync() == 1)
         {
             return await context.TabelaPais.OrderBy(p => p.Id).LastOrDefaultAsync(); 
@@ -63,7 +63,7 @@ public class GerenteService : IGerente
 
     public async Task<List<PaisModelRequest>> ListarPaises()
     {
-        var paisesDB = await context.TabelaPais.ToListAsync();
+        var paisesDB = await context.TabelaPais!.ToListAsync();
         var provinciasDB = await context.TabelaProvincia.ToListAsync();
         var municipiosDB = await context.TabelaMunicipio.ToListAsync();
         var bairrosDB = await context.TabelaBairro.ToListAsync();
@@ -135,6 +135,7 @@ public class GerenteService : IGerente
 
     public async Task<string> CadastrarCorretor(Funcionario funcionario)
     {
+        funcionario.Avatar = "http://192.168.1.158:5254/images/fotoperfil/avatar.jpg";
         await context.TabelaFuncionarios.AddAsync(funcionario);
         if (await context.SaveChangesAsync() == 1)
         {

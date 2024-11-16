@@ -9,6 +9,6 @@ public interface IUsuario
 {    
     Task<ModelResponse<Usuario>?> FazerLogin(ModelResponse<Usuario> usuario);
     Task<ModelResponse<Funcionario>> VerPerfil(int id);
-    Task<bool> EditarPerfil(PerfilUsuario<Funcionario> usuario);
+    Task<bool> EditarPerfil(string avatar, int id);
     Task<bool> EditarSenhafuncionario(Funcionario funcionario);
 }

@@ -18,14 +18,13 @@ public class UsuarioService : IUsuario
     }
 
 
-    public async Task<bool> EditarPerfil(PerfilUsuario<Funcionario> usuario)
+    public async Task<bool> EditarPerfil(string avatar, int id)
     {
-        var perfilDB = await context.TabelaFuncionarios.FirstOrDefaultAsync(f => f.Id == usuario.Entidade!.Id);
+        var perfilDB = await context.TabelaFuncionarios.FirstOrDefaultAsync(f => f.Id == id);
         if (perfilDB is not null)
         {
-            usuario.Entidade!.Senha = perfilDB.Senha;
-            perfilDB = usuario.Entidade;
-            context.TabelaFuncionarios.Update(perfilDB!);
+            perfilDB.Avatar = avatar;
+            
             if (await context.SaveChangesAsync() > 0)
             {
                 return true;
