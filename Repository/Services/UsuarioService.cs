@@ -57,12 +57,24 @@ public class UsuarioService : IUsuario
                 modelResponse.Dados = response;
                 modelResponse.Mensagem = "Sucesso";
                 modelResponse.UserType = response.Nivel; 
-                modelResponse.Estado = response.Estado;                   
-            }else
+                modelResponse.Estado = response.Estado;  
+                return modelResponse;                 
+            }
+
+            
+            var clienteSolicitante = await context.TabelaClientesSolicitantes.FirstOrDefaultAsync(c => c.Telefone == usuario.Dados.Telefone && c.Senha == usuario.Dados.Senha);
+            if (clienteSolicitante is not null)
             {
-                modelResponse.Mensagem = "Telefone ou senha invalida";
-            }       
-        }        
+                clienteSolicitante.Senha = string.Empty;
+                modelResponse.Dados = clienteSolicitante;
+                modelResponse.Estado = clienteSolicitante.Estado;
+                modelResponse.Mensagem = "Sucesso";
+                modelResponse.UserType = "Comprador"; 
+                return modelResponse;                 
+            }          
+        } 
+
+        modelResponse.Mensagem = "Telefone ou senha invalida";       
         return modelResponse;
     }
 

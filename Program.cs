@@ -20,6 +20,7 @@ builder.Services.AddTransient<IGerente, GerenteService>();
 builder.Services.AddTransient<IUsuario, UsuarioService>();
 builder.Services.AddTransient<IClienteProprietario, ProprietarioService>();
 builder.Services.AddTransient<IImovel, ImovelService>();
+builder.Services.AddTransient<IClienteSolicitante, ClienteService>(); 
  
 
 
