@@ -1,3 +1,4 @@
+using App_Imobiliaria_api.Models.imovel;
 using App_Imobiliaria_api.Models.usuario;
 using App_Imobiliaria_api.Repository.Interfaces.usuarioInterface;
 using Microsoft.AspNetCore.Http;
@@ -22,5 +23,26 @@ namespace App_Imobiliaria_api.Controllers
             var response = await cliente.CadastrarCliente(c);
             return response.Contains("Erro") ? BadRequest(response) : Ok(response);           
         }
+
+        [HttpPost]
+        [Route("/cadastrar/favorito")]
+        public async Task<IActionResult> CadastrarFavorito([FromBody] Favorito favorito)
+        {
+            var response = await cliente.AdicionarFavorito(favorito);
+            return response.Contains("Erro") ? BadRequest(response) : Ok(response);           
+        }
+
+        [HttpGet]
+        [Route("/listar/favoritos/{id}")]
+        public async Task<IActionResult> ListarFavoritos(int id)
+        {
+            return Ok(await cliente.ListarFavoritos(id));
+
+        }
+
+        [HttpPost]
+        [Route("/remover/favorito")]
+        public async Task<string> RemoverFavoritos(Favorito favorito) => await cliente.RemoverFavorito(favorito);
+        
     }
 }

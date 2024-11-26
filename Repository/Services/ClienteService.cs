@@ -1,4 +1,5 @@
 using System;
+using App_Imobiliaria_api.Models.imovel;
 using App_Imobiliaria_api.Models.mensagem;
 using App_Imobiliaria_api.Models.usuario;
 using App_Imobiliaria_api.Repository.Interfaces.usuarioInterface;
@@ -13,6 +14,17 @@ public class ClienteService : IClienteSolicitante
     {
         this.context = context;
     }
+
+    public async Task<string> AdicionarFavorito(Favorito favorito)
+    {
+        var f = await context.TabelaFavorito.FirstOrDefaultAsync(f => f.CodigoImovel == favorito.CodigoImovel);
+
+        if (f is not null) return "Não podemos adicionar este imóvel porque já faz parte da sua lista de favoritos";
+
+        await context.TabelaFavorito.AddAsync(favorito);
+        return await context.SaveChangesAsync() > 0 ? "Imóvel adicionado à sua lista de favoritos com sucesso" : "Erro: Não foi possível adicionar o imóvel à sua lista de favoritos, por favor tente novamente";
+    }
+
     public async Task<string> CadastrarCliente(ClienteSolicitante cliente)
     {
         var c = await context.TabelaClientesSolicitantes.FirstOrDefaultAsync(c => c.Telefone == cliente.Telefone);
@@ -27,6 +39,79 @@ public class ClienteService : IClienteSolicitante
     public Task<string> CancelarSolicitacao(int id)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<List<ImovelModelResponse>> ListarFavoritos(int clienteId)
+    {
+        var cliente = await context.TabelaFavorito.Where(f => f.ClienteId == clienteId).OrderByDescending(x => x.Id).ToListAsync();
+
+        var listaFavoritos = new List<ImovelModelResponse>();         
+        
+        if (cliente is not null)
+        {
+            var query = from imovel in context.TabelaImovel
+            join localizacao in context.TabelaLocalizacao on imovel.IdLocalizacao equals localizacao.Id
+            join rua in context.TabelaRua on localizacao.IdRua equals rua.Id
+            join bairro in context.TabelaBairro on localizacao.IdBairro equals bairro.Id
+            join municipio in context.TabelaMunicipio on localizacao.IdMunicipio equals municipio.Id
+            join provincia in context.TabelaProvincia on localizacao.IdProvincia equals provincia.Id
+            join pais in context.TabelaPais! on localizacao.IdPais equals pais.Id        
+            join caracteristica in context.TabelaNaturezaImovel on imovel.IdNaturezaImovel equals caracteristica.Id
+            join tipoImovel in context.TabelaTipoImovel on caracteristica.IdTipoImovel equals tipoImovel.Id
+            join proprietario in context.TabelaClientesProprietarios on imovel.IdClienteProprietario equals proprietario.Id
+            join corretor in context.TabelaFuncionarios on imovel.IdCorretor equals corretor.Id
+            join tipoPublicacao in context.TabelaTipoPublicacao on imovel.TipoPublicidade equals tipoPublicacao.Id
+        
+            select new ImovelModelResponse
+            {
+                Imovel = imovel,
+                Pais = pais,
+                Provincia = provincia,
+                Municipio = municipio,
+                Bairro = bairro,
+                Rua = rua,
+                TipoImovel = tipoImovel,
+                NaturezaImovel = caracteristica,
+                ClienteProprietario = proprietario,
+                CorretorImovel = corretor,
+                Fotos = context.TabelaFoto.Where(f => f.IdImovel == imovel.Codigo).ToList(),
+                FotoPrincipal = context.TabelaFoto.Where(f => f.IdImovel == imovel.Codigo).Select(f => f.Imagem).FirstOrDefault(),
+                TipoPublicacao = tipoPublicacao
+            };
+            var resultado = await query.ToListAsync();
+
+            foreach (var i in cliente)
+            {
+                if (resultado is not null)
+                {
+                    foreach (var item in resultado)
+                    {                        
+                        if (i.CodigoImovel == item.Imovel.Codigo)
+                        {
+                            item.ClienteProprietario.Senha = string.Empty;
+                            item.CorretorImovel.Senha = string.Empty;
+
+                            listaFavoritos.Add(item);
+                            
+                            break;
+                        }                
+                    }
+                } else
+                {
+                    break;
+                }               
+            }
+        }        
+        return listaFavoritos;
+    }
+
+    public async Task<string> RemoverFavorito(Favorito favorito)
+    {
+        var f = await context.TabelaFavorito.FirstOrDefaultAsync(f => f.CodigoImovel == favorito.CodigoImovel && f.ClienteId == favorito.ClienteId);
+        if (f == null) return "Não podemos remover este imóvel porque não consta na lista dos favoritos";
+
+        context.TabelaFavorito.Remove(f);
+        return await context.SaveChangesAsync() > 0 ? "O imóvel foi removido da sua lista de favoritos com sucesso" : "Erro: não foi possível remover o imǘel da sua lista de favoritos.";
     }
 
     public Task<string> SolicitarImovel(SolicitacaoCliente solicitacao)

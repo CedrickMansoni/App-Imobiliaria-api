@@ -315,10 +315,8 @@ public class ImovelService : IImovel
             TipoPublicacao = tipoPublicacao
         };
 
-        
-
-
         var resultado = await query.ToListAsync();
+        
         foreach (var item in resultado)
         {
             item.ClienteProprietario.Senha = string.Empty;
