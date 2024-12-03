@@ -11,6 +11,6 @@ public interface ICorretor
     Task<string> ValidarPedidoPublicacaoImovel(Publicacao publicacaoValidada);
     Task<string> RejeitarPedidoPublicacaoImovel(Publicacao publicacaoRejeitada);
     Task<string> NotificarProprietarioImovel(NotificarProprietario notificarProprietario);
-    Task<string> NotificarClientes(NotificarCliente notificarCliente);
+    Task NotificarClientes(NotificarCliente notificarCliente);
     Task<List<Imovel>> VerSolicitaSolicitacoes();
 }

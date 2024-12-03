@@ -114,13 +114,79 @@ public class ClienteService : IClienteSolicitante
         return await context.SaveChangesAsync() > 0 ? "O imóvel foi removido da sua lista de favoritos com sucesso" : "Erro: não foi possível remover o imǘel da sua lista de favoritos.";
     }
 
-    public Task<string> SolicitarImovel(SolicitacaoCliente solicitacao)
+    public async Task<string> SolicitarImovel(SolicitacaoCliente solicitacao)
     {
-        throw new NotImplementedException();
+        await context.TabelaSolicitacaoCliente.AddAsync(solicitacao);
+        return await context.SaveChangesAsync() > 0 ? "Solicitação registrada com sucesso" : "Erro: Não foi possível registrar a solicitação. Por favor tente novamente";
     }
 
-    public Task<List<SolicitacaoCliente>> VerSolicitacoesFeitas(int id)
+    public async Task<List<ImovelModelResponse>?> SolicitacoesFeitas(int id)
     {
-        throw new NotImplementedException();
+        var solicitacoes = await context.TabelaSolicitacaoCliente.Where(f => f.IdClienteSolicitante == id).OrderByDescending(x => x.Id).ToListAsync();
+                
+        var listaNotificacoes = await context.TabelaNotificarCliente.ToListAsync();
+
+        var listaSolicitacoes = new List<ImovelModelResponse>();         
+        
+        if (solicitacoes is not null)
+        {
+            var query = from imovel in context.TabelaImovel
+            join localizacao in context.TabelaLocalizacao on imovel.IdLocalizacao equals localizacao.Id
+            join rua in context.TabelaRua on localizacao.IdRua equals rua.Id
+            join bairro in context.TabelaBairro on localizacao.IdBairro equals bairro.Id
+            join municipio in context.TabelaMunicipio on localizacao.IdMunicipio equals municipio.Id
+            join provincia in context.TabelaProvincia on localizacao.IdProvincia equals provincia.Id
+            join pais in context.TabelaPais! on localizacao.IdPais equals pais.Id        
+            join caracteristica in context.TabelaNaturezaImovel on imovel.IdNaturezaImovel equals caracteristica.Id
+            join tipoImovel in context.TabelaTipoImovel on caracteristica.IdTipoImovel equals tipoImovel.Id
+            join proprietario in context.TabelaClientesProprietarios on imovel.IdClienteProprietario equals proprietario.Id
+            join corretor in context.TabelaFuncionarios on imovel.IdCorretor equals corretor.Id
+            join tipoPublicacao in context.TabelaTipoPublicacao on imovel.TipoPublicidade equals tipoPublicacao.Id
+        
+            select new ImovelModelResponse
+            {
+                Imovel = imovel,
+                Pais = pais,
+                Provincia = provincia,
+                Municipio = municipio,
+                Bairro = bairro,
+                Rua = rua,
+                TipoImovel = tipoImovel,
+                NaturezaImovel = caracteristica,
+                ClienteProprietario = proprietario,
+                CorretorImovel = corretor,
+                Fotos = context.TabelaFoto.Where(f => f.IdImovel == imovel.Codigo).ToList(),
+                FotoPrincipal = context.TabelaFoto.Where(f => f.IdImovel == imovel.Codigo).Select(f => f.Imagem).FirstOrDefault(),
+                TipoPublicacao = tipoPublicacao
+            };
+            var resultado = await query.ToListAsync();
+
+            foreach (var i in solicitacoes)
+            {
+                if (resultado is not null)
+                {
+                    foreach (var item in listaNotificacoes)
+                    {                        
+                        if (i.Id == item.IdSolicitacao)
+                        {                            
+                            foreach (var x in resultado)
+                            {
+                                if (x.Imovel.Codigo == item.IdPublicacao)
+                                {
+                                    x.ClienteProprietario.Senha = string.Empty;
+                                    x.CorretorImovel.Senha = string.Empty;
+                                    listaSolicitacoes.Add(x);
+                                    break;
+                                }
+                            }
+                        }                
+                    }
+                } else
+                {
+                    break;
+                }               
+            }
+        }        
+        return listaSolicitacoes;
     }
 }

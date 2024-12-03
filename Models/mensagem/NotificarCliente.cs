@@ -13,7 +13,7 @@ public class NotificarCliente
     public string Mensagem { get; set; } = string.Empty;
 
     [Column("id_publicacao")]
-    public int IdPublicacao { get; set; }
+    public string IdPublicacao { get; set; } = string.Empty;
 
     [Column("id_solicitacao")]
     public int IdSolicitacao { get; set; }

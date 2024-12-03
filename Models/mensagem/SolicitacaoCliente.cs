@@ -21,7 +21,7 @@ public class SolicitacaoCliente
     [Column("id_tipo_imovel")]
     public int IdTipoImovel { get; set; }
 
-    [Column("id_localizacao")]
-    public int IdLocalizacao { get; set; }
+    [Column("localizacao")]
+    public string Localizacao { get; set; } = string.Empty;
 }
 

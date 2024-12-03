@@ -313,4 +313,43 @@ public class GerenteService : IGerente
 
         return homePage;
     }
+
+    public async Task NotificarClientes(string codigo)
+    {
+        var clientes = await context.TabelaSolicitacaoCliente.ToListAsync();
+        var imovel = await context.TabelaImovel.FirstOrDefaultAsync(i => i.Codigo == codigo);
+        if (imovel is null) return;
+
+        var local = await context.TabelaLocalizacao.FirstOrDefaultAsync(i => i.Id == imovel.IdLocalizacao);
+        if (local is null) return;
+        var pais = await context.TabelaPais.FirstOrDefaultAsync(p => p.Id == local.IdPais); 
+        var provincia = await context.TabelaProvincia.FirstOrDefaultAsync(p => p.Id == local.IdProvincia); 
+        var municipio = await context.TabelaMunicipio.FirstOrDefaultAsync(p => p.Id == local.IdMunicipio); 
+        var bairro = await context.TabelaBairro.FirstOrDefaultAsync(p => p.Id == local.IdBairro); 
+
+        if (imovel is not null)
+        {
+            foreach (var item in clientes)
+            {
+                if (item.PrecoMinimo >= imovel.Preco && item.PrecoMaximo <= imovel.Preco || item.PrecoMinimo == 0 || item.PrecoMaximo == 0)
+                {
+                    if (item.Localizacao == pais!.NomePais || item.Localizacao == provincia!.NomeProvincia || item.Localizacao == municipio!.NomeMunicipio || item.Localizacao == bairro!.NomeBairro)
+                    {
+                       if(item.IdTipoImovel  == imovel.IdNaturezaImovel || item.IdTipoImovel == 0)
+                       {
+                             var data = new NotificarCliente()
+                            {
+                                IdPublicacao = imovel.Codigo,
+                                DataNotificacao = imovel.DataSolicitacao,
+                                IdSolicitacao = item.Id,
+                                Mensagem = imovel.Descricao,                    
+                            };
+                            await context.TabelaNotificarCliente.AddAsync(data);
+                            await context.SaveChangesAsync();
+                       }   
+                    }                    
+                }
+            }
+        }
+    }
 }

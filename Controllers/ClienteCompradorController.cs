@@ -1,4 +1,5 @@
 using App_Imobiliaria_api.Models.imovel;
+using App_Imobiliaria_api.Models.mensagem;
 using App_Imobiliaria_api.Models.usuario;
 using App_Imobiliaria_api.Repository.Interfaces.usuarioInterface;
 using Microsoft.AspNetCore.Http;
@@ -43,6 +44,18 @@ namespace App_Imobiliaria_api.Controllers
         [HttpPost]
         [Route("/remover/favorito")]
         public async Task<string> RemoverFavoritos(Favorito favorito) => await cliente.RemoverFavorito(favorito);
+
+        [HttpPost]
+        [Route("/cadastrar/solicitacao")]
+        public async Task<string> CadastrarSolicitacao(SolicitacaoCliente solicitacao) => await cliente.SolicitarImovel(solicitacao);
+
+        [HttpGet]
+        [Route("/listar/notificacoes/{id}")]
+        public async Task<IActionResult> ListarNotificacoes(int id)
+        {
+            return Ok(await cliente.SolicitacoesFeitas(id));
+
+        }
         
     }
 }

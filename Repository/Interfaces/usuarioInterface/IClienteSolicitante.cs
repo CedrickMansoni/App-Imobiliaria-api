@@ -9,7 +9,7 @@ public interface IClienteSolicitante
 {
     public Task<string> CadastrarCliente(ClienteSolicitante cliente);
     public Task<string> SolicitarImovel(SolicitacaoCliente solicitacao);
-    public Task<List<SolicitacaoCliente>> VerSolicitacoesFeitas(int id);
+    public Task<List<ImovelModelResponse>?> SolicitacoesFeitas(int id);
     public Task<string> CancelarSolicitacao(int id);
     public Task<string> AdicionarFavorito(Favorito favorito);
     public Task<string> RemoverFavorito(Favorito favorito);

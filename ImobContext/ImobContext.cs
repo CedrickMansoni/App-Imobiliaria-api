@@ -24,7 +24,7 @@ public class ImobContext(DbContextOptions<ImobContext> options) : DbContext(opti
     public required DbSet<Publicacao> TabelaPublicacao { get; set; }
     public required DbSet<TipoPublicacao> TabelaTipoPublicacao { get; set; }
     /* LOCALIZAÇÃO ========================================================================*/
-    public DbSet<Pais>? TabelaPais { get; set; }
+    public required DbSet<Pais> TabelaPais { get; set; }
     public required DbSet<Provincia> TabelaProvincia { get; set; }
     public required DbSet<Municipio> TabelaMunicipio { get; set; }
     public required DbSet<Bairro> TabelaBairro { get; set; }
