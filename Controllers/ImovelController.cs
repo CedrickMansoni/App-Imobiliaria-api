@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using App_Imobiliaria_api.Models.mensagem;
 
 
 namespace App_Imobiliaria_api.Controllers
@@ -37,6 +38,13 @@ namespace App_Imobiliaria_api.Controllers
         public async Task<IActionResult> ListarTipoImovel()
         {
             return Ok(await imovel.ListarTipoImoveis());
+        }
+
+        [HttpGet]
+        [Route("/listar/natureza/imovel")]
+        public async Task<IActionResult> ListarNaturezaImovel()
+        {
+            return Ok(await imovel.ListarNaturezaImovel());
         }
 
         [HttpPut]
@@ -219,6 +227,19 @@ namespace App_Imobiliaria_api.Controllers
         {
             return Ok(await imovel.PesquisarImovel(codigo));
         }
+
+        [HttpPost]
+        [Route("/solicitar/imovel")]
+        public async Task<IActionResult> SolicitarImovel([FromBody] SolicitacaoCliente solicitacao)
+        {
+            var response = await imovel.SolicitarImovel(solicitacao);
+            if (response.Contains("sucesso"))
+            {
+                return Ok(response);
+            }
+            return BadRequest(response);            
+        }
+
     
     }
 }

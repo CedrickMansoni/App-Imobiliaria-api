@@ -3,6 +3,7 @@ using System.Transactions;
 using App_Imobiliaria_api.ImobContext;
 using App_Imobiliaria_api.Models.imovel;
 using App_Imobiliaria_api.Models.localizacao;
+using App_Imobiliaria_api.Models.mensagem;
 using App_Imobiliaria_api.Repository.Interfaces.imovelInterface;
 using Microsoft.EntityFrameworkCore;
 
@@ -255,6 +256,11 @@ public class ImovelService : IImovel
         return await context.TabelaTipoImovel.Where(i => i.Estado == true).OrderBy(i => i.TipoImovelDesc).ToListAsync();
     }
 
+    public async Task<IEnumerable<NaturezaImovel>?> ListarNaturezaImovel()
+    {
+        return await context.TabelaNaturezaImovel.ToListAsync();
+    }
+
     public async Task<string> UploadFotos(List<Foto> fotos, string codigo)
     {
         using(var transacao = await context.Database.BeginTransactionAsync())
@@ -440,5 +446,11 @@ public class ImovelService : IImovel
         var resultado = await query.ToListAsync(); 
         return resultado;
 
+    }
+
+    public async Task<string> SolicitarImovel(SolicitacaoCliente solicitacao)
+    {
+        await context.TabelaSolicitacaoCliente.AddAsync(solicitacao);
+        return await context.SaveChangesAsync() > 0 ? "Solicitação enviada com sucesso" : "Erro: Não foi possível enviar a sua solicitação. Por favor tente mais tarde";
     }
 }

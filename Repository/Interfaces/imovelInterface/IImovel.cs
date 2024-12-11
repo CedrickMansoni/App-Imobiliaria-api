@@ -1,6 +1,7 @@
 using System;
 using App_Imobiliaria_api.Enumerables;
 using App_Imobiliaria_api.Models.imovel;
+using App_Imobiliaria_api.Models.mensagem;
 
 namespace App_Imobiliaria_api.Repository.Interfaces.imovelInterface;
 
@@ -8,6 +9,7 @@ public interface IImovel
 {
     Task<string>CadastrarTipoImovel(TipoImovel tipo);
     Task<List<TipoImovel>?> ListarTipoImoveis();
+    Task<IEnumerable<NaturezaImovel>?> ListarNaturezaImovel();
     Task<string> EditarTipoImovel(TipoImovel tipo);
     Task<string> EliminarTipoImovel(int id, bool tipo = false); 
     /*-----------------------------------------------------------------*/
@@ -26,4 +28,6 @@ public interface IImovel
     /*-----------------------------------------------------------------*/
     Task<string> PublicarImovel(Publicacao publicacao);
     Task<string> EliminarImovel(string codigo);
+
+    Task<string> SolicitarImovel(SolicitacaoCliente solicitacao);
 }
