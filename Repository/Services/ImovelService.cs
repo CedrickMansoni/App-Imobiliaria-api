@@ -112,10 +112,8 @@ public class ImovelService : IImovel
         }
     }
 
-    public static int GerarNumeroAleatorio()
-    {
-        return random.Next(1000, 9999);
-    }
+    public static int GerarNumeroAleatorio() => random.Next(1000, 9999);
+    
 
     public Task<NaturezaImovel> CadastrarNaturezaImove(NaturezaImovel natureza)
     {
@@ -334,7 +332,6 @@ public class ImovelService : IImovel
         }
         return resultado;
     }
-
 
     public async Task<string> PublicarImovel(Publicacao publicacao)
     {
