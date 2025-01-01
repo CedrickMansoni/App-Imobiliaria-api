@@ -17,13 +17,20 @@ namespace App_Imobiliaria_api.Controllers
         }
         [HttpPost]
         [Route("/enviar/sms")]
-        public async Task<IActionResult> SendSMS(EnviarMensagem mensagem)
+        public async Task<IActionResult> SendSMS(Mensagem mensagem)
         {
+
             if (mensagem is null) return BadRequest("Mensagem vazia");
 
-            mensagem.Mensagem.ChaveEntidade = SMS.Agente.Key;
+            mensagem.ChaveEntidade = SMS.Agente.Key;
+            mensagem.Accao = "enviar_sms";
+
+            var message = new EnviarMensagem()
+            {
+                Mensagem = mensagem,
+            };
             
-            return Ok(await sms.EnviarSMS(mensagem));
+            return Ok(await sms.EnviarSMS(message));
             
         }
     }
