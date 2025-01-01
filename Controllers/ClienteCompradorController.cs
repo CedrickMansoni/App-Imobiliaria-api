@@ -51,11 +51,11 @@ namespace App_Imobiliaria_api.Controllers
 
         [HttpGet]
         [Route("/listar/notificacoes/{id}")]
-        public async Task<IActionResult> ListarNotificacoes(int id)
-        {
-            return Ok(await cliente.SolicitacoesFeitas(id));
+        public async Task<IActionResult> ListarNotificacoes(int id) => Ok(await cliente.SolicitacoesFeitas(id));
 
-        }
+        [HttpDelete]
+        [Route("/cancelar/solicitacao/{id}")]
+        public async Task<IActionResult> CancelarSolicitacao(int id) => Ok(await cliente.CancelarSolicitacao(id));
         
     }
 }

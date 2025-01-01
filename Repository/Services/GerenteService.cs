@@ -7,6 +7,7 @@ using App_Imobiliaria_api.Models.imovel;
 using App_Imobiliaria_api.Models.localizacao;
 using App_Imobiliaria_api.Models.mensagem;
 using App_Imobiliaria_api.Models.usuario;
+using App_Imobiliaria_api.Repository.Interfaces.mensagemInterface;
 using App_Imobiliaria_api.Repository.Interfaces.usuarioInterface;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Extensions;
@@ -16,9 +17,11 @@ namespace App_Imobiliaria_api.Repository.Services;
 public class GerenteService : IGerente
 {
     private readonly ImobContext.ImobContext context;
-    public GerenteService(ImobContext.ImobContext context)
+    private readonly ISmsRepository smsSending;
+    public GerenteService(ImobContext.ImobContext context, ISmsRepository smsSending)
     {
         this.context = context;
+        this.smsSending = smsSending;
     }
 
     public async Task<Bairro?> CadastrarBairro(Bairro bairro)
@@ -317,6 +320,7 @@ public class GerenteService : IGerente
     public async Task NotificarClientes(string codigo)
     {
         var clientes = await context.TabelaSolicitacaoCliente.ToListAsync();
+        
         var imovel = await context.TabelaImovel.FirstOrDefaultAsync(i => i.Codigo == codigo);
         if (imovel is null) return;
 
@@ -346,6 +350,13 @@ public class GerenteService : IGerente
                             };
                             await context.TabelaNotificarCliente.AddAsync(data);
                             await context.SaveChangesAsync();
+                            var clienteSMS = await context.TabelaClientesSolicitantes.FirstOrDefaultAsync(i => i.Id == item.IdClienteSolicitante);
+                            var mensagem = new Mensagem()
+                            {
+                                Destinatario = clienteSMS!.Telefone,
+                                DescricaoSms = $"Olá, {clienteSMS.Nome}! Encontramos um imóvel que pode te interessar:\n{imovel.Descricao}. Para mais detalhes, acesse nosso app YULA"
+                            };
+                            await smsSending.EnviarSMS(mensagem);
                        }   
                     }                    
                 }

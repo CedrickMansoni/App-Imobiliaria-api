@@ -36,9 +36,16 @@ public class ClienteService : IClienteSolicitante
         return await context.SaveChangesAsync() > 0 ? "Cliente cadastrado com sucesso" : "Erro:\n Não foi possível criar a conta do cliente, por favor tente novamente";
     }
 
-    public Task<string> CancelarSolicitacao(int id)
+    public async Task<string> CancelarSolicitacao(int id)
     {
-        throw new NotImplementedException();
+        var solicitacao = context.TabelaSolicitacaoCliente.FirstOrDefault(c => c.Id == id);
+        if(solicitacao is not null)
+        {
+            context.TabelaSolicitacaoCliente.Remove(solicitacao);
+        }
+        return await context.SaveChangesAsync() > 0 ? 
+        "Solicitação cancelada com sucesso" : 
+        "Erro: Não conseguimos cancelar a solicitação, por favor tente novamente";
     }
 
     public async Task<List<ImovelModelResponse>> ListarFavoritos(int clienteId)

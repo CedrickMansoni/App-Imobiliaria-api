@@ -1,5 +1,6 @@
 using App_Imobiliaria_api.ImobContext;
 using App_Imobiliaria_api.Repository.Interfaces.imovelInterface;
+using App_Imobiliaria_api.Repository.Interfaces.mensagemInterface;
 using App_Imobiliaria_api.Repository.Interfaces.usuarioInterface;
 using App_Imobiliaria_api.Repository.Services;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ builder.Services.AddTransient<IUsuario, UsuarioService>();
 builder.Services.AddTransient<IClienteProprietario, ProprietarioService>();
 builder.Services.AddTransient<IImovel, ImovelService>();
 builder.Services.AddTransient<IClienteSolicitante, ClienteService>(); 
+builder.Services.AddTransient<ISmsRepository, SmsService>();
  
 
 

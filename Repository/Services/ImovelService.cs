@@ -5,6 +5,7 @@ using App_Imobiliaria_api.Models.imovel;
 using App_Imobiliaria_api.Models.localizacao;
 using App_Imobiliaria_api.Models.mensagem;
 using App_Imobiliaria_api.Repository.Interfaces.imovelInterface;
+using App_Imobiliaria_api.Repository.Interfaces.usuarioInterface;
 using Microsoft.EntityFrameworkCore;
 
 namespace App_Imobiliaria_api.Repository.Services;
@@ -14,9 +15,12 @@ public class ImovelService : IImovel
     private readonly ImobContext.ImobContext context;
     private static readonly Random random = new Random();
 
-    public ImovelService(ImobContext.ImobContext context)
+    private readonly IGerente gerente;
+
+    public ImovelService(ImobContext.ImobContext context, IGerente gerente)
     {
         this.context = context;
+        this.gerente = gerente;
     }
 
     public async Task<string> CadastrarImovel(ImovelModelDTO imovel)
@@ -362,7 +366,9 @@ public class ImovelService : IImovel
 
             if (await context.SaveChangesAsync() > 0)
             {
-                return await MudarEstadoImovel(publicacao.Codigo_Publicacao);
+                response = await MudarEstadoImovel(publicacao.Codigo_Publicacao);
+                await gerente.NotificarClientes(publicacao.Codigo_Publicacao);
+                return response;
             }
         }        
 

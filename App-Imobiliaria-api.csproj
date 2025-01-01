@@ -16,7 +16,6 @@
   <ItemGroup>
     <Folder Include="Repository/Interfaces/leadInterface/" />
     <Folder Include="Repository/Interfaces/localizacaoInterface/" />
-    <Folder Include="Repository/Interfaces/mensagemInterface/" />
   </ItemGroup>
 
 </Project>
