@@ -138,7 +138,7 @@ public class GerenteService : IGerente
 
     public async Task<string> CadastrarCorretor(Funcionario funcionario)
     {
-        funcionario.Avatar = "http://192.168.1.158:5254/images/fotoperfil/avatar.jpg";
+        funcionario.Avatar = $"{UrlBase.UriBase.URI}images/fotoperfil/avatar.jpg";
         await context.TabelaFuncionarios.AddAsync(funcionario);
         if (await context.SaveChangesAsync() == 1)
         {
