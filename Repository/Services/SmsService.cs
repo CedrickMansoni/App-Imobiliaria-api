@@ -15,9 +15,9 @@ public class SmsService : ISmsRepository
         client = new HttpClient();
         option = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
     }
-    public async Task<MensagemResponse?> EnviarSMS(Mensagem mensagem)
+    public async Task<MensagemResponse?> EnviarSMS(EnviarMensagem mensagem)
     {
-        string json = JsonSerializer.Serialize<Mensagem>(mensagem, option);
+        string json = JsonSerializer.Serialize<EnviarMensagem>(mensagem, option);
         StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
         var response = await client.PostAsync(UrlBase.UriBase.Sms, content);
 

@@ -356,7 +356,11 @@ public class GerenteService : IGerente
                                 Destinatario = clienteSMS!.Telefone,
                                 DescricaoSms = $"Olá, {clienteSMS.Nome}! Encontramos um imóvel que pode te interessar:\n{imovel.Descricao}. Para mais detalhes, acesse nosso app YULA"
                             };
-                            await smsSending.EnviarSMS(mensagem);
+                            var sms = new EnviarMensagem()
+                            {
+                                Mensagem = mensagem
+                            };
+                            await smsSending.EnviarSMS(sms);
                        }   
                     }                    
                 }

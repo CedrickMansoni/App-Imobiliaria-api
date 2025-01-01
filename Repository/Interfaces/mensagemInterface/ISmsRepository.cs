@@ -5,5 +5,5 @@ namespace App_Imobiliaria_api.Repository.Interfaces.mensagemInterface;
 
 public interface ISmsRepository
 {
-    Task<MensagemResponse?> EnviarSMS(Mensagem mensagem);
+    Task<MensagemResponse?> EnviarSMS(EnviarMensagem mensagem);
 }
