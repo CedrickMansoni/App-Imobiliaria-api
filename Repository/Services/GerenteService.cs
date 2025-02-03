@@ -326,45 +326,48 @@ public class GerenteService : IGerente
 
         var local = await context.TabelaLocalizacao.FirstOrDefaultAsync(i => i.Id == imovel.IdLocalizacao);
         if (local is null) return;
+        
         var pais = await context.TabelaPais.FirstOrDefaultAsync(p => p.Id == local.IdPais); 
         var provincia = await context.TabelaProvincia.FirstOrDefaultAsync(p => p.Id == local.IdProvincia); 
         var municipio = await context.TabelaMunicipio.FirstOrDefaultAsync(p => p.Id == local.IdMunicipio); 
         var bairro = await context.TabelaBairro.FirstOrDefaultAsync(p => p.Id == local.IdBairro); 
 
-        if (imovel is not null)
+        foreach (var item in clientes)
         {
-            foreach (var item in clientes)
+            if (item.PrecoMinimo >= imovel.Preco && item.PrecoMaximo <= imovel.Preco)
             {
-                if (item.PrecoMinimo >= imovel.Preco && item.PrecoMaximo <= imovel.Preco || item.PrecoMinimo == 0 || item.PrecoMaximo == 0)
+                if (item.Localizacao == pais!.NomePais || item.Localizacao == provincia!.NomeProvincia || item.Localizacao == municipio!.NomeMunicipio || item.Localizacao == bairro!.NomeBairro)
                 {
-                    if (item.Localizacao == pais!.NomePais || item.Localizacao == provincia!.NomeProvincia || item.Localizacao == municipio!.NomeMunicipio || item.Localizacao == bairro!.NomeBairro)
+                    if(item.IdTipoImovel  == imovel.IdNaturezaImovel || item.IdTipoImovel == 0)
                     {
-                       if(item.IdTipoImovel  == imovel.IdNaturezaImovel || item.IdTipoImovel == 0)
-                       {
-                             var data = new NotificarCliente()
-                            {
-                                IdPublicacao = imovel.Codigo,
-                                DataNotificacao = imovel.DataSolicitacao,
-                                IdSolicitacao = item.Id,
-                                Mensagem = imovel.Descricao,                    
-                            };
-                            await context.TabelaNotificarCliente.AddAsync(data);
-                            await context.SaveChangesAsync();
-                            var clienteSMS = await context.TabelaClientesSolicitantes.FirstOrDefaultAsync(i => i.Id == item.IdClienteSolicitante);
-                            var mensagem = new Mensagem()
-                            {
-                                Destinatario = clienteSMS!.Telefone,
-                                DescricaoSms = $"Olá, {clienteSMS.Nome}! Encontramos um imóvel que pode te interessar:\n{imovel.Descricao}. Para mais detalhes, acesse nosso app YULA"
-                            };
-                            var sms = new EnviarMensagem()
-                            {
-                                Mensagem = mensagem
-                            };
-                            await smsSending.EnviarSMS(sms);
-                       }   
-                    }                    
-                }
+                        var data = new NotificarCliente()
+                        {
+                            IdPublicacao = imovel.Codigo,
+                            DataNotificacao = imovel.DataSolicitacao,
+                            IdSolicitacao = item.Id,
+                            Mensagem = imovel.Descricao,                    
+                        };
+                        await context.TabelaNotificarCliente.AddAsync(data);
+                        await context.SaveChangesAsync();
+                        var clienteSMS = await context.TabelaClientesSolicitantes.FirstOrDefaultAsync(i => i.Id == item.IdClienteSolicitante);
+
+                        var mensagem = new Mensagem()
+                        {
+                            ChaveEntidade = SMS.Agente.Key,
+                            Accao = "enviar_sms",
+                            Destinatario = clienteSMS!.Telefone,
+                            DescricaoSms = $"Olá, {clienteSMS.Nome}! Encontramos um imóvel que pode te interessar:\n{imovel.Descricao}. Para mais detalhes, acesse nosso app YULA"
+                        };
+
+                        var sms = new EnviarMensagem()
+                        {
+                            Mensagem = mensagem
+                        };
+                        await smsSending.EnviarSMS(sms);
+                    }   
+                }                    
             }
         }
+
     }
 }

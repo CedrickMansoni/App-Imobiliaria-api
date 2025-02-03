@@ -38,7 +38,13 @@ namespace App_Imobiliaria_api.Controllers
         public async Task<IActionResult> ListarFavoritos(int id)
         {
             return Ok(await cliente.ListarFavoritos(id));
+        }
 
+        [HttpGet]
+        [Route("/listar/solicitacoes/{id}")]
+        public async Task<IActionResult> ListarSolicitacoes(int id)
+        {
+            return Ok(await cliente.SolicitacoesFeitas(id));
         }
 
         [HttpPost]

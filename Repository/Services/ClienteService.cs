@@ -127,73 +127,78 @@ public class ClienteService : IClienteSolicitante
         return await context.SaveChangesAsync() > 0 ? "Solicitação registrada com sucesso" : "Erro: Não foi possível registrar a solicitação. Por favor tente novamente";
     }
 
-    public async Task<List<ImovelModelResponse>?> SolicitacoesFeitas(int id)
+   public async Task<List<ImovelModelResponse>?> SolicitacoesFeitas(int id)
     {
-        var solicitacoes = await context.TabelaSolicitacaoCliente.Where(f => f.IdClienteSolicitante == id).OrderByDescending(x => x.Id).ToListAsync();
-                
+        // Carregar solicitações e notificações em uma única etapa
+        var solicitacoes = await context.TabelaSolicitacaoCliente
+            .Where(f => f.IdClienteSolicitante == id)
+            .OrderByDescending(x => x.Id)
+            .ToListAsync();
+
+        if (!solicitacoes.Any())
+            return new List<ImovelModelResponse>();
+
         var listaNotificacoes = await context.TabelaNotificarCliente.ToListAsync();
 
-        var listaSolicitacoes = new List<ImovelModelResponse>();         
-        
-        if (solicitacoes is not null)
-        {
-            var query = from imovel in context.TabelaImovel
-            join localizacao in context.TabelaLocalizacao on imovel.IdLocalizacao equals localizacao.Id
-            join rua in context.TabelaRua on localizacao.IdRua equals rua.Id
-            join bairro in context.TabelaBairro on localizacao.IdBairro equals bairro.Id
-            join municipio in context.TabelaMunicipio on localizacao.IdMunicipio equals municipio.Id
-            join provincia in context.TabelaProvincia on localizacao.IdProvincia equals provincia.Id
-            join pais in context.TabelaPais! on localizacao.IdPais equals pais.Id        
-            join caracteristica in context.TabelaNaturezaImovel on imovel.IdNaturezaImovel equals caracteristica.Id
-            join tipoImovel in context.TabelaTipoImovel on caracteristica.IdTipoImovel equals tipoImovel.Id
-            join proprietario in context.TabelaClientesProprietarios on imovel.IdClienteProprietario equals proprietario.Id
-            join corretor in context.TabelaFuncionarios on imovel.IdCorretor equals corretor.Id
-            join tipoPublicacao in context.TabelaTipoPublicacao on imovel.TipoPublicidade equals tipoPublicacao.Id
-        
-            select new ImovelModelResponse
-            {
-                Imovel = imovel,
-                Pais = pais,
-                Provincia = provincia,
-                Municipio = municipio,
-                Bairro = bairro,
-                Rua = rua,
-                TipoImovel = tipoImovel,
-                NaturezaImovel = caracteristica,
-                ClienteProprietario = proprietario,
-                CorretorImovel = corretor,
-                Fotos = context.TabelaFoto.Where(f => f.IdImovel == imovel.Codigo).ToList(),
-                FotoPrincipal = context.TabelaFoto.Where(f => f.IdImovel == imovel.Codigo).Select(f => f.Imagem).FirstOrDefault(),
-                TipoPublicacao = tipoPublicacao
-            };
-            var resultado = await query.ToListAsync();
+        // Carregar dados relacionados em uma única consulta
+        var query = from imovel in context.TabelaImovel
+                    join localizacao in context.TabelaLocalizacao on imovel.IdLocalizacao equals localizacao.Id
+                    join rua in context.TabelaRua on localizacao.IdRua equals rua.Id
+                    join bairro in context.TabelaBairro on localizacao.IdBairro equals bairro.Id
+                    join municipio in context.TabelaMunicipio on localizacao.IdMunicipio equals municipio.Id
+                    join provincia in context.TabelaProvincia on localizacao.IdProvincia equals provincia.Id
+                    join pais in context.TabelaPais! on localizacao.IdPais equals pais.Id
+                    join caracteristica in context.TabelaNaturezaImovel on imovel.IdNaturezaImovel equals caracteristica.Id
+                    join tipoImovel in context.TabelaTipoImovel on caracteristica.IdTipoImovel equals tipoImovel.Id
+                    join proprietario in context.TabelaClientesProprietarios on imovel.IdClienteProprietario equals proprietario.Id
+                    join corretor in context.TabelaFuncionarios on imovel.IdCorretor equals corretor.Id
+                    join tipoPublicacao in context.TabelaTipoPublicacao on imovel.TipoPublicidade equals tipoPublicacao.Id
+                    select new
+                    {
+                        Imovel = imovel,
+                        Pais = pais,
+                        Provincia = provincia,
+                        Municipio = municipio,
+                        Bairro = bairro,
+                        Rua = rua,
+                        TipoImovel = tipoImovel,
+                        NaturezaImovel = caracteristica,
+                        ClienteProprietario = proprietario,
+                        CorretorImovel = corretor,
+                        Fotos = context.TabelaFoto.Where(f => f.IdImovel == imovel.Codigo).ToList(),
+                        FotoPrincipal = context.TabelaFoto.Where(f => f.IdImovel == imovel.Codigo).Select(f => f.Imagem).FirstOrDefault(),
+                        TipoPublicacao = tipoPublicacao
+                    };
 
-            foreach (var i in solicitacoes)
+        var resultado = await query.ToListAsync();
+
+        // Filtrar e mapear os resultados
+        var listaSolicitacoes = resultado
+            .Where(res => listaNotificacoes.Any(not => not.IdSolicitacao == id && not.IdPublicacao == res.Imovel.Codigo))
+            .Select(res =>
             {
-                if (resultado is not null)
+                res.ClienteProprietario.Senha = string.Empty;
+                res.CorretorImovel.Senha = string.Empty;
+                return new ImovelModelResponse
                 {
-                    foreach (var item in listaNotificacoes)
-                    {                        
-                        if (i.Id == item.IdSolicitacao)
-                        {                            
-                            foreach (var x in resultado)
-                            {
-                                if (x.Imovel.Codigo == item.IdPublicacao)
-                                {
-                                    x.ClienteProprietario.Senha = string.Empty;
-                                    x.CorretorImovel.Senha = string.Empty;
-                                    listaSolicitacoes.Add(x);
-                                    break;
-                                }
-                            }
-                        }                
-                    }
-                } else
-                {
-                    break;
-                }               
-            }
-        }        
+                    Imovel = res.Imovel,
+                    Pais = res.Pais,
+                    Provincia = res.Provincia,
+                    Municipio = res.Municipio,
+                    Bairro = res.Bairro,
+                    Rua = res.Rua,
+                    TipoImovel = res.TipoImovel,
+                    NaturezaImovel = res.NaturezaImovel,
+                    ClienteProprietario = res.ClienteProprietario,
+                    CorretorImovel = res.CorretorImovel,
+                    Fotos = res.Fotos,
+                    FotoPrincipal = res.FotoPrincipal,
+                    TipoPublicacao = res.TipoPublicacao
+                };
+            })
+            .ToList();
+
         return listaSolicitacoes;
     }
+
 }
